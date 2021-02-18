@@ -32,7 +32,7 @@ SAMPLE_NUM      =   200000
 # the maximum number of sample to take
 MAX_SAMPLES     =   8
 # max size of font
-MAX_FONT_SIZE   =   384
+FONT_SIZE   =   50
 #---------------------------------------------------------------
 def stripPads(arr,val):
     '''
@@ -91,7 +91,7 @@ def cleanImage(img):
     # strip
     img=stripPads(img,255)
     # resize to char dim
-    img=cv2.resize(img,(64,64))
+    img=cv2.resize(img,(CHAR_DIM,CHAR_DIM))
     # Otsu's thresholding after Gaussian filtering
     blur = cv2.GaussianBlur(img,(5,5),0)
     _,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
@@ -110,7 +110,7 @@ def processImage(img,space_factor):
     # get shape
     h,w=img.shape
     # this is to keep with data dimension goals
-    img=cv2.resize(img,(DATA_DIM,DATA_DIM-(64*(space_factor-1)))) 
+    img=cv2.resize(img,(DATA_DIM,DATA_DIM-(CHAR_DIM*(space_factor-1)))) 
     # Otsu's thresholding after Gaussian filtering
     blur = cv2.GaussianBlur(img,(5,5),0)
     _,img = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
@@ -154,7 +154,7 @@ def main(args):
     for sample_num in range(1,MAX_SAMPLES+1):
         LOG_INFO(f"Sample Size:{sample_num}")
         # set font for the desired sample size
-        _font = ImageFont.truetype(FONT_PATH,(384//sample_num))
+        _font = ImageFont.truetype(FONT_PATH,FONT_SIZE)
         # create images
         for i in tqdm(range(SAMPLE_NUM)):
             label_text=''
@@ -186,8 +186,7 @@ def main(args):
             # save
             cv2.imwrite(os.path.join(IMG_DIR,fname),img)
             cv2.imwrite(os.path.join(TGT_DIR,fname),tgt)
-            break
-        
+            
 # ---------------------------------------------------------
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='script to create handwritten to printed text data from bengal.ai grapheme data',formatter_class=argparse.ArgumentDefaultsHelpFormatter)

@@ -28,7 +28,7 @@ Gnome       : 3.28.2
 ```
 
 # Entry Point
-* run **main.py**
+* run **data.py**
 ```python
 
     usage: data.py [-h] --data_path DATA_PATH
@@ -42,9 +42,32 @@ Gnome       : 3.28.2
                             folder (default: None)
 
 ```
+* after execution the folder should have **images** and **targets** as follows:
+```python
+    data
+    ├── images
+    ├── targets
+    ├── label.csv*
+    └── RAW
+```
+* run **main.py** with the same **data_path** as **data.py**
+```python
+
+    usage: main.py [-h] --data_path DATA_PATH
+
+    script to create handwritten to printed text data from bengal.ai grapheme data
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --data_path DATA_PATH
+                            The path to the folder that contains label.csv and RAW
+                            folder (default: None)
+
+```
+
+
 # NOTES
 * **TODO:** 
     *   Add error handling
-    *   tfrecord preparation
     *   Documentation
 
