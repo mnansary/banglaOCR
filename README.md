@@ -2,7 +2,7 @@
 Mostly contains grapheme 'image' representation code 
 
 ```python
-Version: 0.0.1     
+Version: 0.0.2     
 Authors: Md. Nazmuddoha Ansary 
 ```
 **LOCAL ENVIRONMENT**  
@@ -28,40 +28,18 @@ Gnome       : 3.28.2
 ```
 
 # Entry Point
-* run **data.py**
+* create the specific dataset such as: **grapheme** or **word** with corresponding script
+* run **main.py**
 ```python
 
-    usage: data.py [-h] --data_path DATA_PATH
+    usage: main.py [-h] --data_dir DATA_DIR
 
     script to create handwritten to printed text data from bengal.ai grapheme data
 
     optional arguments:
-    -h, --help            show this help message and exit
-    --data_path DATA_PATH
-                            The path to the folder that contains label.csv and RAW
-                            folder (default: None)
-
-```
-* after execution the folder should have **images** and **targets** as follows:
-```python
-    data
-    ├── images
-    ├── targets
-    ├── label.csv*
-    └── RAW
-```
-* run **main.py** with the same **data_path** as **data.py**
-```python
-
-    usage: main.py [-h] --data_path DATA_PATH
-
-    script to create handwritten to printed text data from bengal.ai grapheme data
-
-    optional arguments:
-    -h, --help            show this help message and exit
-    --data_path DATA_PATH
-                            The path to the folder that contains label.csv and RAW
-                            folder (default: None)
+    -h, --help           show this help message and exit
+    --data_dir DATA_DIR  The path to the folder that contains images and targets
+                        (default: None)
 
 ```
 

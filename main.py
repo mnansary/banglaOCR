@@ -53,12 +53,8 @@ def to_tfrecord(image_paths,save_dir,r_num):
             # target
             with(open(target_path,'rb')) as fid:
                 target_png_bytes=fid.read()
-            # get count
-            samples=int(str(os.path.basename(image_path)).replace(".png",'').split("_")[-1])
-            # data
             data ={ 'image':_bytes_feature(image_png_bytes),
-                    'target':_bytes_feature(target_png_bytes),
-                    'samples':_int64_feature(samples)
+                    'target':_bytes_feature(target_png_bytes)
             }
             # write
             features=tf.train.Features(feature=data)
@@ -123,6 +119,6 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description='script to create handwritten to printed text data from bengal.ai grapheme data',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--data_dir',
                         required=True,
-                        help="The path to the folder that contains label.csv and RAW folder") 
+                        help="The path to the folder that contains images and targets") 
     args = parser.parse_args()
     main(args)
