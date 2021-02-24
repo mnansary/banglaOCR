@@ -101,6 +101,7 @@ def main(args):
 
     # tfrecord saving directories 
     save_dir = data_dir
+    save_dir = create_dir(save_dir,str(os.path.basename(os.path.dirname(data_dir))))
     rec_dir  = create_dir(save_dir,'tfrecords')
     train_rec= create_dir(rec_dir,'train')
     eval_rec = create_dir(rec_dir,'eval')
