@@ -1,10 +1,10 @@
 # banglaOCR
-Mostly contains grapheme 'image' representation code 
 
 ```python
-Version: 0.0.2     
+Version: 0.0.3     
 Authors: Md. Nazmuddoha Ansary 
 ```
+
 **LOCAL ENVIRONMENT**  
 ```python
 OS          : Ubuntu 18.04.3 LTS (64-bit) Bionic Beaver        
@@ -14,38 +14,37 @@ Graphics    : Intel® UHD Graphics 620 (Kabylake GT2)
 Gnome       : 3.28.2  
 ```
 # Setup
-* ```pip3 install -r requirements.txt```
+>Assuming the **libraqm** complex layout is working properly, you can skip to **python requirements**. 
+*  ```sudo apt-get install libfreetype6-dev libharfbuzz-dev libfribidi-dev gtk-doc-tools```
+* Install libraqm as described [here](https://github.com/HOST-Oman/libraqm)
+* ```sudo ldconfig``` (librarqm local repo)
 
-# Dataset
-* The dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
-* Only the **256** folder under **256_train** is kept and renamed as **RAW** form **BengaliAI:Supplementary dataset for BengaliAI Competition**
-* And the **train.csv** under **Bengali.AI Handwritten Grapheme Classification:Classify the components of handwritten Bengali** is renamed as **label.csv**
-* The final **data** folder is like as follows:
+**python requirements**
+* **pip requirements**: ```pip3 install -r requirements.txt``` 
+> Its better to use a virtual environment 
+* **conda**: use env.yml
+
+# Input Dataset
+* The overall dataset is available here: https://www.kaggle.com/nazmuddhohaansary/sourcedata
+* We only need the **bangla** folder for this
+* The folder structre should look as follows:
+
 ```python
-    data
-    ├── label.csv
-    └── RAW
+        sourcedata
+        ├── bangla
+           ├── graphemes.csv
+           ├── numbers.csv
+           ├── dictionary.csv
+           ├── fonts
+           ├── graphemes
+           └── numbers
+            
 ```
-
-# Entry Point
-* create the specific dataset such as: **grapheme** or **word** with corresponding script
-* run **main.py**
-```python
-
-    usage: main.py [-h] --data_dir DATA_DIR
-
-    script to create handwritten to printed text data from bengal.ai grapheme data
-
-    optional arguments:
-    -h, --help           show this help message and exit
-    --data_dir DATA_DIR  The path to the folder that contains images and targets
-                        (default: None)
-
-```
-
-
-# NOTES
-* **TODO:** 
-    *   Add error handling
-    *   Documentation
+* The path for the **sourcedata** folder is the **data_dir** used in **data.ipynb**
+* The dataset is collected and compiled from vairous sources such as:
+    * The bangla **grapheme** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
+        * Only the **256** folder under **256_train** is kept and renamed as **RAW** form **BengaliAI:Supplementary dataset for BengaliAI Competition**
+    * The bangla **number** dataset is taken from [here](https://www.kaggle.com/nazmuddhohaansary/banglasymbols) 
+        * Only the **RAW_NUMS** folder is kept that contains all the images of the numbers
+    
 

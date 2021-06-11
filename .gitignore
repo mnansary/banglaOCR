@@ -130,6 +130,6 @@ dmypy.json
 
 # 
 ocrenv/*
-data.ipynb
 demos/*
 weights/*
+.vscode/*
