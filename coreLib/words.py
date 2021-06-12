@@ -154,6 +154,5 @@ def single(ds,comp_type,use_dict=True,dim=(64,512)):
 
     # data
     image,target,word =createData(df,comps,font,height=h)
-    label="".join(comps) 
-    return correctPadding(image,dim),correctPadding(target,dim),correctPadding(word,dim),label
+    return correctPadding(image,dim),correctPadding(target,dim),correctPadding(word,dim),comps
 

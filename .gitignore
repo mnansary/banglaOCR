@@ -128,8 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# 
-ocrenv/*
-demos/*
-weights/*
 .vscode/*
+models/*

@@ -1,7 +1,7 @@
 # banglaOCR
 
 ```python
-Version: 0.0.3     
+Version: 0.0.4     
 Authors: Md. Nazmuddoha Ansary 
 ```
 
@@ -22,7 +22,8 @@ Gnome       : 3.28.2
 **python requirements**
 * **pip requirements**: ```pip3 install -r requirements.txt``` 
 > Its better to use a virtual environment 
-* **conda**: use env.yml
+OR use conda-
+* **conda**: use environment.yml
 
 # Input Dataset
 * The overall dataset is available here: https://www.kaggle.com/nazmuddhohaansary/sourcedata
@@ -46,5 +47,12 @@ Gnome       : 3.28.2
         * Only the **256** folder under **256_train** is kept and renamed as **RAW** form **BengaliAI:Supplementary dataset for BengaliAI Competition**
     * The bangla **number** dataset is taken from [here](https://www.kaggle.com/nazmuddhohaansary/banglasymbols) 
         * Only the **RAW_NUMS** folder is kept that contains all the images of the numbers
-    
 
+**NOTE**: [Pretraining Kernel](https://www.kaggle.com/nazmuddhohaansary/image-to-font)
+
+# FineTuning DataSet
+
+* For Modifier Finetuning the following open source dataset was used: https://www.kaggle.com/nazmuddhohaansary/boisebangladata
+* This data set is variation of dataset introduced by:
+[Nishatul Majid](https://orcid.org/0000-0001-5445-5252) and [Elisa Barney-Smith](https://orcid.org/0000-0003-2039-3844)
+```[DOI](https://doi.org/10.18122/saipl/1/boisestate)```
