@@ -60,7 +60,4 @@ OR use conda-
 
 # Kernels
 * [Pretraining Kernel](https://www.kaggle.com/nazmuddhohaansary/image-to-font)
-* [Finetuning Kernel](https://www.kaggle.com/nazmuddhohaansary/finetune-bhocr)
 
-# Inference:
-* See **infer.ipynb** for example

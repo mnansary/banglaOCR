@@ -131,3 +131,5 @@ dmypy.json
 .vscode/*
 models/*
 debug.ipynb
+tests/*
+__todo__/*
