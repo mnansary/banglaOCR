@@ -42,10 +42,6 @@ def createData(df,comps,font,height=64):
     # construct labels
     imgs=[]
     tgts=[]
-    for idx,comp in enumerate(comps):
-        if idx < len(comps)-1 and comps[idx+1] in mods:
-            comps[idx]+=comps[idx+1]
-            comps[idx+1]=None 
             
     comps=[comp for comp in comps if comp is not None]
     
