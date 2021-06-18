@@ -48,7 +48,6 @@ def stripPads(arr,
     arr=arr[:, ~np.all(arr == val, axis=0)]
     return arr
 #---------------------------------------------------------------
-
 def padImage(img,pad_loc,pad_dim):
     '''
         pads an image with white value
@@ -66,8 +65,8 @@ def padImage(img,pad_loc,pad_dim):
         # print(left_pad_width)
         right_pad_width=pad_dim-w-left_pad_width
         # pads
-        left_pad =np.zeros((h,left_pad_width))
-        right_pad=np.zeros((h,right_pad_width))
+        left_pad =np.ones((h,left_pad_width))*255
+        right_pad=np.ones((h,right_pad_width))*255
         # pad
         img =np.concatenate([left_pad,img,right_pad],axis=1)
     else:
@@ -77,11 +76,11 @@ def padImage(img,pad_loc,pad_dim):
         top_pad_height =(pad_dim-h)//2
         bot_pad_height=pad_dim-h-top_pad_height
         # pads
-        top_pad =np.zeros((top_pad_height,w))
-        bot_pad=np.zeros((bot_pad_height,w))
+        top_pad =np.ones((top_pad_height,w))*255
+        bot_pad=np.ones((bot_pad_height,w))*255
         # pad
         img =np.concatenate([top_pad,img,bot_pad],axis=0)
-    return img.astype("uint8")    
+    return img.astype("uint8")      
 
 def correctPadding(img,dim=(64,512)):
     '''

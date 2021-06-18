@@ -6,17 +6,14 @@
 # imports
 #--------------------
 import os
-from types import LambdaType
 import pandas as pd
 import random
 import cv2
 import numpy as np
-import math
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
-
+from skimage.util import random_noise
 from tqdm import tqdm
-from glob import glob
 from .utils import stripPads,correctPadding
 tqdm.pandas()
 #--------------------------------------------------------------------------------------------
@@ -36,14 +33,23 @@ def createData(df,comps,font,height=64):
     '''
     
     comps=[str(comp) for comp in comps]
+    
     # reconfigure comps
     mods=['ঁ', 'ং', 'ঃ']
     while comps[0] in mods:
         comps=comps[1:]
+    
     # construct labels
     imgs=[]
     tgts=[]
-    for comp in comps:
+    for idx,comp in enumerate(comps):
+        if idx < len(comps)-1 and comps[idx+1] in mods:
+            comps[idx]+=comps[idx+1]
+            comps[idx+1]=None 
+            
+    comps=[comp for comp in comps if comp is not None]
+    
+    for idx,comp in enumerate(comps):
         #----------------------
         # image
         #----------------------
@@ -65,22 +71,26 @@ def createData(df,comps,font,height=64):
         #----------------------
         # target
         #----------------------
-        # shape    
-        h,w=img.shape 
+        if idx<len(comps)-1 and comps[idx+1] in mods:
+            comp+=comps[idx+1]
         
-        min_offset=100
-        max_dim=h+w+min_offset
-        # draw
-        image = PIL.Image.new(mode='L', size=(max_dim,max_dim))
-        draw = PIL.ImageDraw.Draw(image)
-        draw.text(xy=(0, 0), text=comp, fill=255, font=font)
-        # create target
-        tgt=np.array(image)
-        tgt=stripPads(tgt,0)
-        # resize
-        tgt=cv2.resize(tgt,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
-        tgts.append(tgt)
-    
+        if comp not in mods:
+            # shape    
+            h,w=img.shape 
+            
+            min_offset=100
+            max_dim=h+w+min_offset
+            # draw
+            image = PIL.Image.new(mode='L', size=(max_dim,max_dim))
+            draw = PIL.ImageDraw.Draw(image)
+            draw.text(xy=(0, 0), text=comp, fill=255, font=font)
+            # create target
+            tgt=np.array(image)
+            tgt=stripPads(tgt,0)
+            # resize
+            tgt=cv2.resize(tgt,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+            tgts.append(tgt)
+        
 
     img=np.concatenate(imgs,axis=1)
     tgt=np.concatenate(tgts,axis=1)
@@ -93,11 +103,17 @@ def createData(df,comps,font,height=64):
     image = PIL.Image.new(mode='L', size=(max_dim,max_dim))
     draw = PIL.ImageDraw.Draw(image)
     draw.text(xy=(0, 0), text=label, fill=255, font=font)
-    # word
-    word=np.array(image)
-    word=stripPads(word,0)
         
-    return img,tgt,word
+    # invert
+    img=255-img
+    tgt=255-tgt  
+
+    # noise
+    noise_img = random_noise(img, mode='s&p',amount=random.choice([0.2,0.15,0.1,0.05]))
+    img = np.array(255*noise_img, dtype = 'uint8')
+    
+
+    return img,tgt
 
 
 
@@ -153,6 +169,6 @@ def single(ds,comp_type,use_dict=True,dim=(64,512)):
             comps.append(df.iloc[idx,1])
 
     # data
-    image,target,word =createData(df,comps,font,height=h)
-    return correctPadding(image,dim),correctPadding(target,dim),correctPadding(word,dim),comps
+    image,target=createData(df,comps,font,height=h)
+    return correctPadding(image,dim),correctPadding(target,dim)
 

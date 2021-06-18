@@ -37,7 +37,6 @@ def to_tfrecord(image_paths,save_dir,r_num):
         for image_path in image_paths:
             
             target_path=str(image_path).replace('images','targets')
-            word_path  =str(image_path).replace('images','words')
             #image
             with(open(image_path,'rb')) as fid:
                 image_bytes=fid.read()
@@ -45,13 +44,9 @@ def to_tfrecord(image_paths,save_dir,r_num):
             with(open(target_path,'rb')) as fid:
                 target_bytes=fid.read()
             
-            # words
-            with(open(word_path,'rb')) as fid:
-                word_bytes=fid.read()
             
             data ={ 'image':_bytes_feature(image_bytes),
                     'target':_bytes_feature(target_bytes),
-                    "word":_bytes_feature(word_bytes)
             }
             # write
             features=tf.train.Features(feature=data)

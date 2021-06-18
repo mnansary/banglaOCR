@@ -1,7 +1,7 @@
 # banglaOCR
 
 ```python
-Version: 0.0.4     
+Version: 0.0.5     
 Authors: Md. Nazmuddoha Ansary 
 ```
 
@@ -49,6 +49,9 @@ OR use conda-
     * The bangla **number** dataset is taken from [here](https://www.kaggle.com/nazmuddhohaansary/banglasymbols) 
         * Only the **RAW_NUMS** folder is kept that contains all the images of the numbers
 
+# Testing 
+* For Testing we have used **bangla writting dataset**: https://www.kaggle.com/reasat/banglawriting
+* Only Converted folder is used 
 
 
 # FineTuning DataSet
