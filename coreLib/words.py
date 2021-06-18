@@ -53,9 +53,12 @@ def createData(df,comps,font,height=64):
         #----------------------
         # image
         #----------------------
-        c_df=df.loc[df.label==comp]
-        # select a image file
-        idx=random.randint(0,len(c_df)-1)
+        try:
+            c_df=df.loc[df.label==comp]
+            # select a image file
+            idx=random.randint(0,len(c_df)-1)
+        except Exception as e:
+            print(comp)
         img_path=c_df.iloc[idx,2] 
         # read image
         img=cv2.imread(img_path,0)
@@ -71,10 +74,12 @@ def createData(df,comps,font,height=64):
         #----------------------
         # target
         #----------------------
-        if idx<len(comps)-1 and comps[idx+1] in mods:
-            comp+=comps[idx+1]
         
         if comp not in mods:
+        
+            if idx<len(comps)-1 and comps[idx+1] in mods:
+                comp=comp+comps[idx+1]
+        
             # shape    
             h,w=img.shape 
             
