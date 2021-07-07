@@ -12,7 +12,6 @@ import cv2
 import numpy as np
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
-from skimage.util import random_noise
 from tqdm import tqdm
 from .utils import stripPads,correctPadding
 tqdm.pandas()
@@ -21,7 +20,7 @@ class config:
     min_word_len=1
     max_word_len=10
 #--------------------------------------------------------------------------------------------
-def createData(df,comps,font,height=64):
+def createData(df,comps,font,height=32):
     '''
         creates handwriten word image
         args:
@@ -109,16 +108,12 @@ def createData(df,comps,font,height=64):
     img=255-img
     tgt=255-tgt  
 
-    # noise
-    noise_img = random_noise(img, mode='s&p',amount=random.choice([0.2,0.15,0.1,0.05]))
-    img = np.array(255*noise_img, dtype = 'uint8')
-    
 
     return img,tgt
 
 
 
-def single(ds,comp_type,use_dict=True,dim=(64,512)):
+def single(ds,comp_type,use_dict=True,dim=(32,128)):
     '''
         creates a word image-target pair
         args:

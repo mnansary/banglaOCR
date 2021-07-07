@@ -14,7 +14,6 @@ import numpy as np
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
 
-from skimage.util import random_noise
 from tqdm import tqdm
 from glob import glob
 
@@ -34,6 +33,7 @@ def main(args):
     # dataset object
     ds=DataSet(data_path)
     # pairs
+    save_path=create_dir(save_path,"finetune")
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
     # records
@@ -105,12 +105,9 @@ def main(args):
             # revalue
             img[img<255]=0
             tgt=255-tgt
-            # noise
-            noise_img = random_noise(img, mode='s&p',amount=random.choice([0.2,0.15,0.1,0.05]))
-            img = np.array(255*noise_img, dtype = 'uint8')
             # pad correction
-            img=correctPadding(img)
-            tgt=correctPadding(tgt)
+            img=correctPadding(img,dim=(img_height,img_width))
+            tgt=correctPadding(tgt,dim=(img_height,img_width))
             # save
             cv2.imwrite(os.path.join(img_dir,f"{idx}.png"),img)
             cv2.imwrite(os.path.join(tgt_dir,f"{idx}.png"),tgt)
@@ -134,8 +131,8 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser("BHOCR Pre-Training Dataset Creating Script")
     parser.add_argument("data_path", help="Path of the input boise state data folder from ReadMe.md)")
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
-    parser.add_argument("--img_height",required=False,default=64,help ="height for each grapheme: default=64")
-    parser.add_argument("--img_width",required=False,default=512,help ="width dimension of word images: default=512")
+    parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
+    parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
     args = parser.parse_args()
     main(args)
     

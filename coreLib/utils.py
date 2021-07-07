@@ -82,7 +82,7 @@ def padImage(img,pad_loc,pad_dim):
         img =np.concatenate([top_pad,img,bot_pad],axis=0)
     return img.astype("uint8")      
 
-def correctPadding(img,dim=(64,512)):
+def correctPadding(img,dim=(32,128)):
     '''
         corrects an 
     '''

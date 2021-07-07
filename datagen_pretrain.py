@@ -30,6 +30,7 @@ def main(args):
     # dataset object
     ds=DataSet(data_path)
     # pairs
+    save_path=create_dir(save_path,"pretrain")
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
     # records
@@ -64,8 +65,8 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser("BHOCR Pre-Training Dataset Creating Script")
     parser.add_argument("data_path", help="Path of the input data folder from ReadMe.md)")
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
-    parser.add_argument("--img_height",required=False,default=64,help ="height for each grapheme: default=64")
-    parser.add_argument("--img_width",required=False,default=512,help ="width dimension of word images: default=512")
+    parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
+    parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
     parser.add_argument("--nb_train",required=False,default=1000000,help ="number of images for training:default:1000000")
     args = parser.parse_args()
     main(args)

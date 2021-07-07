@@ -1,7 +1,7 @@
 # banglaOCR
 
 ```python
-Version: 0.0.5     
+Version: 0.0.6     
 Authors: Md. Nazmuddoha Ansary 
 ```
 
@@ -26,33 +26,15 @@ OR use conda-
 * **conda**: use environment.yml
 * install **tesseract** if you want to use the **tesseract-ocr**. Make sure to properly setup the bangla data. 
 
-# Input Dataset
+# Pretraining Dataset
 * The overall dataset is available here: https://www.kaggle.com/nazmuddhohaansary/sourcedata
 * We only need the **bangla** folder for this
-* The folder structre should look as follows:
-
-```python
-        sourcedata
-        ├── bangla
-           ├── graphemes.csv
-           ├── numbers.csv
-           ├── dictionary.csv
-           ├── fonts
-           ├── graphemes
-           └── numbers
-            
-```
-* The path for the **sourcedata** folder is the **data_dir** used in **data.ipynb**
+* The path for the **source** folder is the **data_path** used in **datagen_pretrain.py** and **datagen_finetune.py**
 * The dataset is collected and compiled from vairous sources such as:
     * The bangla **grapheme** dataset is taken from [here](https://www.kaggle.com/pestipeti/bengali-quick-eda/#data). 
         * Only the **256** folder under **256_train** is kept and renamed as **RAW** form **BengaliAI:Supplementary dataset for BengaliAI Competition**
     * The bangla **number** dataset is taken from [here](https://www.kaggle.com/nazmuddhohaansary/banglasymbols) 
         * Only the **RAW_NUMS** folder is kept that contains all the images of the numbers
-
-# Testing 
-* For Testing we have used **bangla writting dataset**: https://www.kaggle.com/reasat/banglawriting
-* Only Converted folder is used 
-
 
 # FineTuning DataSet
 
@@ -61,6 +43,21 @@ OR use conda-
 [Nishatul Majid](https://orcid.org/0000-0001-5445-5252) and [Elisa Barney-Smith](https://orcid.org/0000-0003-2039-3844)
 ```[DOI](https://doi.org/10.18122/saipl/1/boisestate)```
 
-# Kernels
-* [Pretraining Kernel](https://www.kaggle.com/nazmuddhohaansary/image-to-font)
 
+* The folder structre should look as follows:
+
+```python
+        source
+        ├── bangla
+           ├── graphemes.csv
+           ├── numbers.csv
+           ├── dictionary.csv
+           ├── fonts
+           ├── graphemes
+           └── numbers
+        ├── boise_state
+            
+```
+# Execution
+* run **datagen_pretrain.py**
+* run **datagen_finetune.py**
