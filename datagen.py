@@ -7,17 +7,18 @@
 #--------------------
 import argparse
 import os 
+import json
 import random
-import cv2
-import numpy as np
+import cv2 
+import pandas as pd
+import numpy as np 
 import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
-
 from tqdm import tqdm
 from glob import glob
-
-from coreLib.utils import stripPads,correctPadding,create_dir,LOG_INFO
 from coreLib.dataset import DataSet
+from coreLib.utils import create_dir,correctPadding,stripPads,LOG_INFO
+from coreLib.words import single
 from coreLib.store import genTFRecords
 tqdm.pandas()
 #--------------------
@@ -25,18 +26,52 @@ tqdm.pandas()
 #--------------------
 def main(args):
 
+
+    filename=[]
+    labels  =[]
+    _path   =[]
     data_path   =   args.data_path
-    save_path   =   args.save_path
+    main_path   =   args.save_path
     img_height  =   int(args.img_height)
     img_width   =   int(args.img_width)
+    nb_train    =   int(args.nb_train)
     # dataset object
     ds=DataSet(data_path)
+    main_path=create_dir(main_path,"segCRNNdata")
     # pairs
-    save_path=create_dir(save_path,"finetune")
+    save_path=create_dir(main_path,"synth")
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
-    # records
-    rec_dir  =create_dir(save_path,"tfrecords")
+    map_dir=create_dir(save_path,"maps")
+    
+    # create the images
+    for i in tqdm(range(nb_train)):
+        try:
+            # selection
+            comp_type =random.choice(["grapheme"])
+            use_dict  =random.choice([True,False])
+            img,tgt,map,label=single(ds,comp_type,use_dict,(img_height,img_width))
+            
+            # save
+            cv2.imwrite(os.path.join(img_dir,f"synth{i}.png"),img)
+            cv2.imwrite(os.path.join(tgt_dir,f"synth{i}.png"),tgt)
+            np.save(os.path.join(map_dir,f"synth{i}.npy"),map)
+
+            filename.append(f"synth{i}")
+            labels.append(label)
+            _path.append(os.path.join(img_dir,f"synth{i}.png"))
+            
+        except Exception as e:
+            print(e)
+
+    
+    # pairs
+    save_path=create_dir(main_path,"bs")
+    img_dir=create_dir(save_path,"images")
+    tgt_dir=create_dir(save_path,"targets")
+    map_dir=create_dir(save_path,"maps")
+
+
     # data
     df=ds.boise_state.df
     df["img_path"]=df.filename.progress_apply(lambda x: os.path.join(ds.boise_state.dir,x))
@@ -64,12 +99,13 @@ def main(args):
             img=cv2.resize(img,(width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
 
             #-----------------
-            # target
+            # target and map
             #-----------------
             # unique values
             vals=list(np.unique(img))
             # construct target    
             tgts=[]
+            maps=[]
             # grapheme wise separation
             for v,comp in zip(vals,comps):
                 if v!=0:
@@ -96,7 +132,17 @@ def main(args):
                     tgt=cv2.resize(tgt,(width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
                     tgts.append(tgt)
 
+                    #--------------------------------
+                    # maps
+                    #--------------------------------
+                    h,w=tgt.shape
+                    map=np.zeros((h,w))
+                    map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=1+ds.known_graphemes.index(comp)
+                    maps.append(map)
+
+
             tgt=np.concatenate(tgts,axis=1)
+            map=np.concatenate(maps,axis=1)
             # resize
             h,w=img.shape 
             tgt=cv2.resize(tgt,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
@@ -107,19 +153,38 @@ def main(args):
             # pad correction
             img=correctPadding(img,dim=(img_height,img_width))
             tgt=correctPadding(tgt,dim=(img_height,img_width))
+            map=correctPadding(map,dim=(img_height,img_width),pad_val=0)
+            
             # save
-            cv2.imwrite(os.path.join(img_dir,f"{idx}.png"),img)
-            cv2.imwrite(os.path.join(tgt_dir,f"{idx}.png"),tgt)
+            cv2.imwrite(os.path.join(img_dir,f"bs{idx}.png"),img)
+            cv2.imwrite(os.path.join(tgt_dir,f"bs{idx}.png"),tgt)
+            np.save(os.path.join(map_dir,f"bs{idx}.npy"),map)
 
+            filename.append(f"bs{idx}")
+            labels.append(comps)
+            _path.append(os.path.join(img_dir,f"bs{idx}.png"))
+            
         except Exception as e:
             LOG_INFO(e)
 
+    df_s=pd.DataFrame({"filename":filename,"labels":labels,"img_path":_path})
+    df_s.to_csv(os.path.join(main_path,"data.csv") ,index=False)
+    
 
 
-    # paths    
-    img_paths=[img_path for img_path in glob(os.path.join(img_dir,"*.*"))]
-    # tfrecords
-    genTFRecords(img_paths,rec_dir)    
+    # config 
+    config={'img_height':img_height,
+            'img_width':img_width,   
+            'nb_channels':3,
+            'vocab':ds.known_graphemes,
+            'synthetic_data':nb_train,
+            'boise_state_data':len(df)
+            }
+    config_json=os.path.join(main_path,"config.json")
+    with open(config_json, 'w') as fp:
+        json.dump(config, fp,sort_keys=True, indent=4,ensure_ascii=False)
+    
+  
     
 #-----------------------------------------------------------------------------------
 
@@ -128,10 +193,11 @@ if __name__=="__main__":
         parsing and execution
     '''
     parser = argparse.ArgumentParser("BHOCR Pre-Training Dataset Creating Script")
-    parser.add_argument("data_path", help="Path of the input boise state data folder from ReadMe.md)")
+    parser.add_argument("data_path", help="Path of the input data folder from ReadMe.md)")
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
+    parser.add_argument("--nb_train",required=False,default=100000,help ="number of images for training:default:100000")
     args = parser.parse_args()
     main(args)
     

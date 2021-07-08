@@ -20,10 +20,11 @@ class config:
     min_word_len=1
     max_word_len=10
 #--------------------------------------------------------------------------------------------
-def createData(df,comps,font,height=32):
+def createData(ds,df,comps,font,height=32):
     '''
         creates handwriten word image
         args:
+            ds       :       the dataset resource
             df       :       the dataframe that holds the file name and label
             font_path:       the path of the font to use   
             comps    :       the list of components 
@@ -41,7 +42,7 @@ def createData(df,comps,font,height=32):
     # construct labels
     imgs=[]
     tgts=[]
-            
+    maps=[]        
     comps=[comp for comp in comps if comp is not None]
     
     for idx,comp in enumerate(comps):
@@ -67,7 +68,7 @@ def createData(df,comps,font,height=32):
         imgs.append(img)
         
         #----------------------
-        # target
+        # target and maps
         #----------------------
         
         if comp not in mods:
@@ -90,10 +91,17 @@ def createData(df,comps,font,height=32):
             # resize
             tgt=cv2.resize(tgt,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             tgts.append(tgt)
-        
+            
+            #----------------------------
+            # maps
+            #---------------------------
+            map=np.zeros(img.shape)
+            map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=1+ds.known_graphemes.index(comp)
+            maps.append(map)
 
     img=np.concatenate(imgs,axis=1)
     tgt=np.concatenate(tgts,axis=1)
+    map=np.concatenate(maps,axis=1)
     # create word
     label="".join(comps)
     h,w=img.shape
@@ -109,7 +117,7 @@ def createData(df,comps,font,height=32):
     tgt=255-tgt  
 
 
-    return img,tgt
+    return img,tgt,map
 
 
 
@@ -165,6 +173,6 @@ def single(ds,comp_type,use_dict=True,dim=(32,128)):
             comps.append(df.iloc[idx,1])
 
     # data
-    image,target=createData(df,comps,font,height=h)
-    return correctPadding(image,dim),correctPadding(target,dim)
+    image,target,map=createData(ds,df,comps,font,height=h)
+    return correctPadding(image,dim),correctPadding(target,dim),correctPadding(map,dim,pad_val=0),comps
 

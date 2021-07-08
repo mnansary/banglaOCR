@@ -71,6 +71,9 @@ class DataSet(object):
         self.bangla.dictionary  =self.__getDataFrame(self.bangla.dict_csv,is_dict=True)
         self.boise_state.df     =self.__getDataFrame(self.boise_state,label_type="list")
         
+        # graphemes
+        self.known_graphemes=sorted(list(self.bangla.graphemes.df.label.unique()))
+
         
         # data validity
         self.__checkDataValidity(self.bangla.graphemes,"bangla.graphemes")

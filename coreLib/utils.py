@@ -48,7 +48,7 @@ def stripPads(arr,
     arr=arr[:, ~np.all(arr == val, axis=0)]
     return arr
 #---------------------------------------------------------------
-def padImage(img,pad_loc,pad_dim):
+def padImage(img,pad_loc,pad_dim,pad_val=255):
     '''
         pads an image with white value
         args:
@@ -65,8 +65,8 @@ def padImage(img,pad_loc,pad_dim):
         # print(left_pad_width)
         right_pad_width=pad_dim-w-left_pad_width
         # pads
-        left_pad =np.ones((h,left_pad_width))*255
-        right_pad=np.ones((h,right_pad_width))*255
+        left_pad =np.ones((h,left_pad_width))*pad_val
+        right_pad=np.ones((h,right_pad_width))*pad_val
         # pad
         img =np.concatenate([left_pad,img,right_pad],axis=1)
     else:
@@ -76,13 +76,13 @@ def padImage(img,pad_loc,pad_dim):
         top_pad_height =(pad_dim-h)//2
         bot_pad_height=pad_dim-h-top_pad_height
         # pads
-        top_pad =np.ones((top_pad_height,w))*255
-        bot_pad=np.ones((bot_pad_height,w))*255
+        top_pad =np.ones((top_pad_height,w))*pad_val
+        bot_pad=np.ones((bot_pad_height,w))*pad_val
         # pad
         img =np.concatenate([top_pad,img,bot_pad],axis=0)
-    return img.astype("uint8")      
+    return img    
 
-def correctPadding(img,dim=(32,128)):
+def correctPadding(img,dim=(32,128),pad_val=255):
     '''
         corrects an 
     '''
@@ -94,10 +94,10 @@ def correctPadding(img,dim=(32,128)):
         h_new= int(img_width* h/w) 
         img=cv2.resize(img,(img_width,h_new),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
         # pad
-        img=padImage(img,pad_loc="tb",pad_dim=img_height) 
+        img=padImage(img,pad_loc="tb",pad_dim=img_height,pad_val=pad_val) 
     elif w < img_width:
         # pad
-        img=padImage(img,pad_loc="lr",pad_dim=img_width)
+        img=padImage(img,pad_loc="lr",pad_dim=img_width,pad_val=pad_val)
     # error avoid
     img=cv2.resize(img,(img_width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
     return img 
