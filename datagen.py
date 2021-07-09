@@ -19,7 +19,6 @@ from glob import glob
 from coreLib.dataset import DataSet
 from coreLib.utils import create_dir,correctPadding,stripPads,LOG_INFO
 from coreLib.words import single
-from coreLib.store import genTFRecords
 tqdm.pandas()
 #--------------------
 # main
@@ -38,32 +37,7 @@ def main(args):
     # dataset object
     ds=DataSet(data_path)
     main_path=create_dir(main_path,"segCRNNdata")
-    # pairs
-    save_path=create_dir(main_path,"synth")
-    img_dir=create_dir(save_path,"images")
-    tgt_dir=create_dir(save_path,"targets")
-    map_dir=create_dir(save_path,"maps")
     
-    # create the images
-    for i in tqdm(range(nb_train)):
-        try:
-            # selection
-            comp_type =random.choice(["grapheme"])
-            use_dict  =random.choice([True,False])
-            img,tgt,map,label=single(ds,comp_type,use_dict,(img_height,img_width))
-            
-            # save
-            cv2.imwrite(os.path.join(img_dir,f"synth{i}.png"),img)
-            cv2.imwrite(os.path.join(tgt_dir,f"synth{i}.png"),tgt)
-            np.save(os.path.join(map_dir,f"synth{i}.npy"),map)
-
-            filename.append(f"synth{i}")
-            labels.append(label)
-            _path.append(os.path.join(img_dir,f"synth{i}.png"))
-            
-        except Exception as e:
-            print(e)
-
     
     # pairs
     save_path=create_dir(main_path,"bs")
@@ -166,6 +140,34 @@ def main(args):
             
         except Exception as e:
             LOG_INFO(e)
+
+
+    # pairs
+    save_path=create_dir(main_path,"synth")
+    img_dir=create_dir(save_path,"images")
+    tgt_dir=create_dir(save_path,"targets")
+    map_dir=create_dir(save_path,"maps")
+    
+    # create the images
+    for i in tqdm(range(nb_train)):
+        try:
+            # selection
+            comp_type =random.choice(["grapheme"])
+            use_dict  =random.choice([True,False])
+            img,tgt,map,label=single(ds,comp_type,use_dict,(img_height,img_width))
+            
+            # save
+            cv2.imwrite(os.path.join(img_dir,f"synth{i}.png"),img)
+            cv2.imwrite(os.path.join(tgt_dir,f"synth{i}.png"),tgt)
+            np.save(os.path.join(map_dir,f"synth{i}.npy"),map)
+
+            filename.append(f"synth{i}")
+            labels.append(label)
+            _path.append(os.path.join(img_dir,f"synth{i}.png"))
+            
+        except Exception as e:
+            print(e)
+
 
     df_s=pd.DataFrame({"filename":filename,"labels":labels,"img_path":_path})
     df_s.to_csv(os.path.join(main_path,"data.csv") ,index=False)

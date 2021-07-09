@@ -66,6 +66,14 @@ def createData(ds,df,comps,font,height=32):
         img=255-img
         img[img>0]=255
         imgs.append(img)
+
+        #----------------------------
+        # maps
+        #---------------------------
+        map=np.zeros(img.shape)
+        map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=1+ds.known_graphemes.index(comp)
+        maps.append(map)
+
         
         #----------------------
         # target and maps
@@ -92,13 +100,7 @@ def createData(ds,df,comps,font,height=32):
             tgt=cv2.resize(tgt,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             tgts.append(tgt)
             
-            #----------------------------
-            # maps
-            #---------------------------
-            map=np.zeros(img.shape)
-            map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=1+ds.known_graphemes.index(comp)
-            maps.append(map)
-
+            
     img=np.concatenate(imgs,axis=1)
     tgt=np.concatenate(tgts,axis=1)
     map=np.concatenate(maps,axis=1)
