@@ -56,6 +56,8 @@ def main(args):
     font=PIL.ImageFont.truetype(font_path, size=img_height)
 
     
+
+    bs_skip=[]
     for idx in tqdm(range(len(df))):
         try:
             # extract
@@ -140,6 +142,8 @@ def main(args):
             
         except Exception as e:
             LOG_INFO(e)
+            bs_skip.append(idx)
+    LOG_INFO(f"skipped:{len(bs_skip)}")
 
 
     # pairs
