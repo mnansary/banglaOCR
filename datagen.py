@@ -16,8 +16,9 @@ import PIL
 import PIL.Image , PIL.ImageDraw , PIL.ImageFont 
 from tqdm import tqdm
 from glob import glob
+from ast import literal_eval
 from coreLib.dataset import DataSet
-from coreLib.utils import create_dir,correctPadding,stripPads,LOG_INFO
+from coreLib.utils import create_dir,correctPadding,stripPads,LOG_INFO,lambda_paded_label
 from coreLib.words import single
 tqdm.pandas()
 #--------------------
@@ -34,6 +35,8 @@ def main(args):
     img_height  =   int(args.img_height)
     img_width   =   int(args.img_width)
     nb_train    =   int(args.nb_train)
+    max_word_length =   int(args.max_word_length)+1
+    
     # dataset object
     ds=DataSet(data_path)
     main_path=create_dir(main_path,"segCRNNdata")
@@ -44,6 +47,7 @@ def main(args):
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
     map_dir=create_dir(save_path,"maps")
+    seg_dir=create_dir(save_path,"segocr_outs")
 
 
     # data
@@ -130,11 +134,14 @@ def main(args):
             img=correctPadding(img,dim=(img_height,img_width))
             tgt=correctPadding(tgt,dim=(img_height,img_width))
             map=correctPadding(map,dim=(img_height,img_width),pad_val=0)
+            h,w=map.shape
+            seg=cv2.resize(map,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             
             # save
             cv2.imwrite(os.path.join(img_dir,f"bs{idx}.png"),img)
             cv2.imwrite(os.path.join(tgt_dir,f"bs{idx}.png"),tgt)
             np.save(os.path.join(map_dir,f"bs{idx}.npy"),map)
+            np.save(os.path.join(seg_dir,f"bs{idx}.npy"),seg)
 
             filename.append(f"bs{idx}")
             labels.append(comps)
@@ -152,7 +159,8 @@ def main(args):
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
     map_dir=create_dir(save_path,"maps")
-    
+    seg_dir=create_dir(save_path,"segocr_outs")
+
     # create the images
     for i in tqdm(range(nb_train)):
         try:
@@ -160,11 +168,15 @@ def main(args):
             comp_type =random.choice(["grapheme"])
             use_dict  =random.choice([True,False])
             img,tgt,map,label=single(ds,comp_type,use_dict,(img_height,img_width))
+            h,w=map.shape
+            seg=cv2.resize(map,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+            
             
             # save
             cv2.imwrite(os.path.join(img_dir,f"synth{i}.png"),img)
             cv2.imwrite(os.path.join(tgt_dir,f"synth{i}.png"),tgt)
             np.save(os.path.join(map_dir,f"synth{i}.npy"),map)
+            np.save(os.path.join(seg_dir,f"synth{idx}.npy"),seg)
 
             filename.append(f"synth{i}")
             labels.append(label)
@@ -173,10 +185,22 @@ def main(args):
         except Exception as e:
             print(e)
 
-
+    # create dataframe
     df_s=pd.DataFrame({"filename":filename,"labels":labels,"img_path":_path})
+    # length
+    df_s["label_len"]=df_s.labels.progress_apply(lambda x:len(x))
+    # label_lenght correction
+    df_s=df_s.loc[df_s.label_len<max_word_length]
+    # encode
+    df_s["encoded"]= df_s.labels.progress_apply(lambda x:[ds.vocab.index(i) for i in x])
+    df_s["glabel"] = df_s.encoded.progress_apply(lambda x:lambda_paded_label(x,max_word_length))
+    
+    # save
     df_s.to_csv(os.path.join(main_path,"data.csv") ,index=False)
     
+
+
+
 
 
     # config 
@@ -185,7 +209,10 @@ def main(args):
             'nb_channels':3,
             'vocab':ds.vocab,
             'synthetic_data':nb_train,
-            'boise_state_data':len(df)
+            'boise_state_data':len(df),
+            'max_word_len':max_word_length,
+            'map_size':int(img_height*img_width),
+            'seg_size':int(img_height//2*img_width//2)
             }
     config_json=os.path.join(main_path,"config.json")
     with open(config_json, 'w') as fp:
@@ -205,6 +232,8 @@ if __name__=="__main__":
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
     parser.add_argument("--nb_train",required=False,default=100000,help ="number of images for training:default:100000")
+    parser.add_argument("--max_word_length",required=False,default=10,help ="maximum word lenght data to keep:default:10")
+    
     args = parser.parse_args()
     main(args)
     

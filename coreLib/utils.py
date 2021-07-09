@@ -116,6 +116,11 @@ def get_sorted_vocab(symbol_lists):
     vocab=[""]+vocab
     return vocab
 
+#------------------
+def lambda_paded_label(x,max_len):
+    for _ in range(len(x),max_len):
+        x.append(0)
+    return x
 #--------------------
 # Parser class
 #--------------------
