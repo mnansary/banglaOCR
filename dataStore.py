@@ -24,7 +24,7 @@ def main(args):
     max_word_length =   int(args.max_word_length)+1
     
     # resources
-    rec_path=create_dir(rec_path,"segCRNNdata","tfrecords")
+    rec_path=create_dir( os.path.join(rec_path,"segCRNNdata"),"tfrecords")
     config_json=os.path.join(data_path,"segCRNNdata","config.json")
     data_csv   =os.path.join(data_path,"segCRNNdata","data.csv")
     #------
