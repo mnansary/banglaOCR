@@ -37,7 +37,7 @@ def to_tfrecord(df,save_dir,r_num):
     # path
     tfrecord_path=os.path.join(save_dir,tfrecord_name)
     with tf.io.TFRecordWriter(tfrecord_path) as writer:    
-        for idx in len(df):
+        for idx in range(len(df)):
             image_path=df.iloc[idx,0]
             glabel  =df.iloc[idx,1]
             
