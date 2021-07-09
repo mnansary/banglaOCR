@@ -71,7 +71,7 @@ def createData(ds,df,comps,font,height=32):
         # maps
         #---------------------------
         map=np.zeros(img.shape)
-        map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=1+ds.known_graphemes.index(comp)
+        map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=ds.vocab.index(comp)
         maps.append(map)
 
         

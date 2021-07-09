@@ -101,6 +101,20 @@ def correctPadding(img,dim=(32,128),pad_val=255):
     # error avoid
     img=cv2.resize(img,(img_width,img_height),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
     return img 
+#-----------------------------------------------------
+def get_sorted_vocab(symbol_lists):
+    '''
+        creates a sorted vocabulary list 
+        args:
+            symbol_lists    :   list of list of symbols
+    '''
+    vocab=[]
+    for symbol_list in symbol_lists:
+            vocab+=symbol_list
+    vocab=sorted(list(set(vocab)))
+    # ACCOUNT FOR BLANK INDEX
+    vocab=[""]+vocab
+    return vocab
 
 #--------------------
 # Parser class

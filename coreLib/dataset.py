@@ -10,7 +10,7 @@ import pandas as pd
 from glob import glob
 from tqdm import tqdm
 from ast import literal_eval
-from .utils import LOG_INFO
+from .utils import LOG_INFO,get_sorted_vocab
 tqdm.pandas()
 #--------------------
 # class info
@@ -71,9 +71,13 @@ class DataSet(object):
         self.bangla.dictionary  =self.__getDataFrame(self.bangla.dict_csv,is_dict=True)
         self.boise_state.df     =self.__getDataFrame(self.boise_state,label_type="list")
         
-        # graphemes
+        # vocab
         self.known_graphemes=sorted(list(self.bangla.graphemes.df.label.unique()))
-
+        symbol_lists=self.boise_state.df.labels.tolist()
+        self.vocab=get_sorted_vocab(symbol_lists)
+        self.vocab+=self.known_graphemes
+        self.vocab=sorted(self.vocab)
+        
         
         # data validity
         self.__checkDataValidity(self.bangla.graphemes,"bangla.graphemes")

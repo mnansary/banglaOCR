@@ -113,7 +113,7 @@ def main(args):
                     #--------------------------------
                     h,w=tgt.shape
                     map=np.zeros((h,w))
-                    map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=1+ds.known_graphemes.index(comp)
+                    map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=ds.vocab.index(comp)
                     maps.append(map)
 
 
@@ -183,7 +183,7 @@ def main(args):
     config={'img_height':img_height,
             'img_width':img_width,   
             'nb_channels':3,
-            'vocab':ds.known_graphemes,
+            'vocab':ds.vocab,
             'synthetic_data':nb_train,
             'boise_state_data':len(df)
             }
