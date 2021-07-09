@@ -23,7 +23,8 @@ def _bytes_feature(value):
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=value.flatten()))
 def _int64_list_feature(value):
-      return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=value))
+
 def to_tfrecord(df,save_dir,r_num):
     '''	            
       Creates tfrecords from Provided Image Paths	        
@@ -52,10 +53,11 @@ def to_tfrecord(df,save_dir,r_num):
             # map
             _map_data=np.load(map_path)
             _map_data=_map_data.astype("int")
-            data ={ 'image':_bytes_feature(image_bytes),
-                    'target':_bytes_feature(target_bytes),
-                    'map':_int64_feature(_map_data),
-                    'glabel':_int64_list_feature(glabel)
+            
+            data ={ 'image'     :_bytes_feature(image_bytes),
+                    'target'    :_bytes_feature(target_bytes),
+                    'map'       :_int64_feature(_map_data),
+                    'glabel'    :_int64_list_feature(glabel)
             }
             # write
             features=tf.train.Features(feature=data)
