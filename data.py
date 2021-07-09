@@ -20,6 +20,7 @@ from ast import literal_eval
 from coreLib.dataset import DataSet
 from coreLib.utils import create_dir,correctPadding,stripPads,LOG_INFO,lambda_paded_label
 from coreLib.words import single
+from coreLib.store import genTFRecords
 tqdm.pandas()
 #--------------------
 # main
@@ -40,6 +41,8 @@ def main(args):
     # dataset object
     ds=DataSet(data_path)
     main_path=create_dir(main_path,"segCRNNdata")
+    # resources
+    rec_path=create_dir( main_path,"tfrecords")
     
     
     # pairs
@@ -135,7 +138,7 @@ def main(args):
             tgt=correctPadding(tgt,dim=(img_height,img_width))
             map=correctPadding(map,dim=(img_height,img_width),pad_val=0)
             h,w=map.shape
-            seg=cv2.resize(map,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+            seg=cv2.resize(map,(w//2,h//2),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             
             # save
             cv2.imwrite(os.path.join(img_dir,f"bs{idx}.png"),img)
@@ -169,14 +172,14 @@ def main(args):
             use_dict  =random.choice([True,False])
             img,tgt,map,label=single(ds,comp_type,use_dict,(img_height,img_width))
             h,w=map.shape
-            seg=cv2.resize(map,(w,h),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
+            seg=cv2.resize(map,(w//2,h//2),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             
             
             # save
             cv2.imwrite(os.path.join(img_dir,f"synth{i}.png"),img)
             cv2.imwrite(os.path.join(tgt_dir,f"synth{i}.png"),tgt)
             np.save(os.path.join(map_dir,f"synth{i}.npy"),map)
-            np.save(os.path.join(seg_dir,f"synth{idx}.npy"),seg)
+            np.save(os.path.join(seg_dir,f"synth{i}.npy"),seg)
 
             filename.append(f"synth{i}")
             labels.append(label)
@@ -199,8 +202,9 @@ def main(args):
     df_s.to_csv(os.path.join(main_path,"data.csv") ,index=False)
     
 
+    df_s=df_s[["img_path","glabel"]]
 
-
+    genTFRecords(df_s,rec_path)
 
 
     # config 
