@@ -51,7 +51,7 @@ def to_tfrecord(df,save_dir,r_num):
                 target_bytes=fid.read()
             # map
             _map_data=np.load(map_path)
-            
+            _map_data=_map_data.astype("int")
             data ={ 'image':_bytes_feature(image_bytes),
                     'target':_bytes_feature(target_bytes),
                     'map':_int64_feature(_map_data),
