@@ -141,8 +141,9 @@ def main(args):
             _path.append(os.path.join(img_dir,f"bs{idx}.png"))
             
         except Exception as e:
-            LOG_INFO(e)
+            #LOG_INFO(e)
             bs_skip.append(idx)
+    
     LOG_INFO(f"skipped:{len(bs_skip)}")
 
 
