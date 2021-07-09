@@ -62,7 +62,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser("BHOCR Dataset storing script")
     parser.add_argument("data_path", help="Path of the input data folder from ReadMe.md)")
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
-    parser.add_argument("--max_word_length",required=False,default=12,help ="maximum word lenght data to keep:default:12")
+    parser.add_argument("--max_word_length",required=False,default=10,help ="maximum word lenght data to keep:default:10")
     
     args = parser.parse_args()
     main(args)
