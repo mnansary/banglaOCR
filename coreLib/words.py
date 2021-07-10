@@ -42,9 +42,11 @@ def createData(ds,df,comps,font,height=32):
     # construct labels
     imgs=[]
     tgts=[]
-    maps=[]        
+    maps=[]   
+
     comps=[comp for comp in comps if comp is not None]
-    
+    graphemes=[comp for comp in comps]
+
     for idx,comp in enumerate(comps):
         #----------------------
         # image
@@ -98,8 +100,9 @@ def createData(ds,df,comps,font,height=32):
     img=np.concatenate(imgs,axis=1)
     tgt=np.concatenate(tgts,axis=1)
 
+
     # map 
-    for _img in imgs:
+    for _img,comp in zip(imgs,graphemes):
         map=np.zeros(_img.shape)
         h,w=map.shape
         map[int(h/4):int(3*h/4),int(w/4):int(3*w/4)]=ds.vocab.index(comp)

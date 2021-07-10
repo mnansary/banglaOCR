@@ -40,7 +40,7 @@ def main(args):
     
     # dataset object
     ds=DataSet(data_path)
-    main_path=create_dir(main_path,"segCRNNdata")
+    main_path=create_dir(main_path,"moduled")
     # resources
     rec_path=create_dir( main_path,"tfrecords")
     
@@ -50,8 +50,7 @@ def main(args):
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
     map_dir=create_dir(save_path,"maps")
-    seg_dir=create_dir(save_path,"segocr_outs")
-
+    
 
     # data
     df=ds.boise_state.df
@@ -137,14 +136,11 @@ def main(args):
             img=correctPadding(img,dim=(img_height,img_width))
             tgt=correctPadding(tgt,dim=(img_height,img_width))
             map=correctPadding(map,dim=(img_height,img_width),pad_val=0)
-            h,w=map.shape
-            seg=cv2.resize(map,(w//2,h//2),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             
             # save
             cv2.imwrite(os.path.join(img_dir,f"bs{idx}.png"),img)
             cv2.imwrite(os.path.join(tgt_dir,f"bs{idx}.png"),tgt)
             np.save(os.path.join(map_dir,f"bs{idx}.npy"),map)
-            np.save(os.path.join(seg_dir,f"bs{idx}.npy"),seg)
 
             filename.append(f"bs{idx}")
             labels.append(comps)
@@ -162,8 +158,7 @@ def main(args):
     img_dir=create_dir(save_path,"images")
     tgt_dir=create_dir(save_path,"targets")
     map_dir=create_dir(save_path,"maps")
-    seg_dir=create_dir(save_path,"segocr_outs")
-
+    
     # create the images
     for i in tqdm(range(nb_train)):
         try:
@@ -171,16 +166,13 @@ def main(args):
             comp_type =random.choice(["grapheme"])
             use_dict  =random.choice([True,False])
             img,tgt,map,label=single(ds,comp_type,use_dict,(img_height,img_width))
-            h,w=map.shape
-            seg=cv2.resize(map,(w//2,h//2),fx=0,fy=0, interpolation = cv2.INTER_NEAREST)
             
             
             # save
             cv2.imwrite(os.path.join(img_dir,f"synth{i}.png"),img)
             cv2.imwrite(os.path.join(tgt_dir,f"synth{i}.png"),tgt)
             np.save(os.path.join(map_dir,f"synth{i}.npy"),map)
-            np.save(os.path.join(seg_dir,f"synth{i}.npy"),seg)
-
+            
             filename.append(f"synth{i}")
             labels.append(label)
             _path.append(os.path.join(img_dir,f"synth{i}.png"))
@@ -235,7 +227,7 @@ if __name__=="__main__":
     parser.add_argument("save_path", help="Path of the directory to save the dataset")
     parser.add_argument("--img_height",required=False,default=32,help ="height for each grapheme: default=32")
     parser.add_argument("--img_width",required=False,default=128,help ="width dimension of word images: default=128")
-    parser.add_argument("--nb_train",required=False,default=100000,help ="number of images for training:default:100000")
+    parser.add_argument("--nb_train",required=False,default=50000,help ="number of images for training:default:50000")
     parser.add_argument("--max_word_length",required=False,default=10,help ="maximum word lenght data to keep:default:10")
     
     args = parser.parse_args()

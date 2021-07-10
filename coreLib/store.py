@@ -44,7 +44,6 @@ def to_tfrecord(df,save_dir,r_num):
             
             target_path=str(image_path).replace('images','targets')
             map_path   =str(image_path).replace('images','maps').replace(".png",".npy")
-            seg_path   =str(image_path).replace('images',"segocr_outs").replace(".png",".npy")
             #image
             with(open(image_path,'rb')) as fid:
                 image_bytes=fid.read()
@@ -54,14 +53,11 @@ def to_tfrecord(df,save_dir,r_num):
             # map
             _map_data=np.load(map_path)
             _map_data=_map_data.astype("int")
-            _seg_data=np.load(seg_path)
-            _seg_data=_seg_data.astype("int")
             
             
             data ={ 'image'     :_bytes_feature(image_bytes),
                     'target'    :_bytes_feature(target_bytes),
-                    'map'       :_int64_feature(_map_data),
-                    'seg'       :_int64_feature(_seg_data),
+                    'seg'       :_int64_feature(_map_data),
                     'glabel'    :_int64_list_feature(glabel)
             }
             # write
